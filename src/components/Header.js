@@ -28,11 +28,9 @@ class Header extends React.Component {
       user,
       loading,
     } = this.state;
-
     if (loading) {
       return <Loading />;
     }
-
     return (
       <header data-testid="header-component">
         { loading ? <Loading />
@@ -46,5 +44,4 @@ class Header extends React.Component {
     );
   }
 }
-
 export default Header;
