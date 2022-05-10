@@ -16,16 +16,13 @@ class Album extends React.Component {
 
   async componentDidMount() {
     const { match: { params: { id } } } = this.props;
-    this.setState(
-      async () => {
-        const listMusics = await getMusics(id);
-        this.setState({
-          artist: listMusics[0].artistName,
-          album: listMusics[0].collectionName,
-          musicList: listMusics,
-        });
-      },
-    );
+    const album = await getMusics(id);
+    const listMusics = album.filter((item, index) => index !== 0);
+    this.setState({
+      artist: album[0].artistName,
+      album: album[0].collectionName,
+      musicList: listMusics,
+    });
   }
 
   render() {
@@ -44,7 +41,14 @@ class Album extends React.Component {
         <h3 data-testid="album-name">
           { album }
         </h3>
-        <MusicCard musicList={ musicList } />
+        { musicList.map((music) => (
+          <MusicCard
+            key={ music.trackId }
+            trackName={ music.trackName }
+            previewUrl={ music.previewUrl }
+            trackId={ music.trackId }
+          />
+        ))}
       </div>
     );
   }
