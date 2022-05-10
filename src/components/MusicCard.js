@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { addSong } from '../services/favoriteSongsAPI';
 import Loading from './Loading';
 
-class MusicCard extends React.Component {
+export default class MusicCard extends Component {
   constructor() {
     super();
     this.state = {
@@ -79,5 +79,3 @@ MusicCard.propTypes = {
   checked: PropTypes.bool.isRequired,
   song: PropTypes.objectOf(PropTypes.shape).isRequired,
 };
-
-export default MusicCard;

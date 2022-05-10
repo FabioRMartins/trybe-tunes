@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
-import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   constructor() {
@@ -20,7 +20,7 @@ class Album extends React.Component {
     const { match: { params: { id } } } = this.props;
     const album = await getMusics(id);
     const saveFavorite = await getFavoriteSongs();
-    const listMusics = album.filter((index) => index !== 0);
+    const listMusics = album.filter((item, index) => index !== 0);
     this.setState({
       artist: album[0].artistName,
       album: album[0].collectionName,
@@ -49,7 +49,6 @@ class Album extends React.Component {
       album,
       artist,
     } = this.state;
-
     return (
       <div data-testid="page-album">
         <Header />
@@ -72,9 +71,7 @@ class Album extends React.Component {
     );
   }
 }
-
 Album.propTypes = {
   match: PropTypes.shape({ params: PropTypes.objectOf(PropTypes.string) }).isRequired,
 };
-
 export default Album;
