@@ -28,6 +28,13 @@ class Album extends React.Component {
     });
   }
 
+  updateFavoritas = async () => {
+    const favoritesPage = await getFavoriteSongs();
+    this.setState({
+      favoritList: [...favoritesPage],
+    });
+  }
+
   render() {
     const {
       musicList,
@@ -52,6 +59,7 @@ class Album extends React.Component {
             trackId={ music.trackId }
             music={ music }
             favoritList={ favoritList }
+            update={ this.updateFavoritas }
           />
         ))}
       </div>
