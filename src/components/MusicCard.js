@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 import Loading from './Loading';
 
 export default class MusicCard extends Component {
@@ -13,23 +13,32 @@ export default class MusicCard extends Component {
   }
 
   componentDidMount() {
-    const { checked } = this.props;
-    this.setState({
-      favorite: checked,
-    });
+    const { favoritList, trackId } = this.props;
+    if (favoritList.some((music) => music.trackId === trackId)) {
+      this.setState({ favorite: true });
+    } else {
+      this.setState({ favorite: false });
+    }
+  }
+
+  componentDidUpdate() {
+    getFavoriteSongs();
   }
 
   favoriteSongs = ({ target }) => {
     this.setState({
       favorite: target.checked,
+      loading: true,
     }, async () => {
       const { favorite } = this.state;
-      const { song } = this.props;
+      const { music } = this.props;
       if (favorite === true) {
+        await addSong(music);
         this.setState({
-          loading: true,
+          loading: false,
         });
-        await addSong(song);
+      } else {
+        await removeSong(music);
         this.setState({
           loading: false,
         });
@@ -52,16 +61,16 @@ export default class MusicCard extends Component {
                   O seu navegador não suporta o elemento
                   <code>audio</code>
                 </audio>
-
-                <input
-                  type="checkbox"
-                  label="Favorita"
-                  onChange={ this.favoriteSongs }
-                  data-testid={ `checkbox-music-${trackId}` }
-                  checked={ favorite }
-                  id="favorite"
-                />
-
+                <label htmlFor={ trackId }>
+                  Favorita
+                  <input
+                    type="checkbox"
+                    onChange={ this.favoriteSongs }
+                    data-testid={ `checkbox-music-${trackId}` }
+                    checked={ favorite }
+                    id={ trackId }
+                  />
+                </label>
               </div>
             )
         }
@@ -72,10 +81,8 @@ export default class MusicCard extends Component {
 
 MusicCard.propTypes = {
   trackName: PropTypes.string.isRequired,
-  trackId: PropTypes.oneOfType([
-    PropTypes.string.isRequired,
-    PropTypes.number.isRequired]).isRequired,
+  trackId: PropTypes.number.isRequired,
   previewUrl: PropTypes.string.isRequired,
-  checked: PropTypes.bool.isRequired,
-  song: PropTypes.objectOf(PropTypes.shape).isRequired,
+  music: PropTypes.objectOf(PropTypes.shape).isRequired,
+  favoritList: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

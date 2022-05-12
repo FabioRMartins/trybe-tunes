@@ -12,35 +12,20 @@ class Album extends React.Component {
       musicList: [],
       artist: '',
       album: '',
-      favoriteList: [],
+      favoritList: [],
     };
   }
 
   async componentDidMount() {
     const { match: { params: { id } } } = this.props;
     const album = await getMusics(id);
-    const saveFavorite = await getFavoriteSongs();
-    const listMusics = album.filter((item, index) => index !== 0);
+    const fav = await getFavoriteSongs();
     this.setState({
       artist: album[0].artistName,
       album: album[0].collectionName,
-      musicList: listMusics,
-      favoriteList: saveFavorite,
+      musicList: album,
+      favoritList: [...fav],
     });
-  }
-
-  favoriteListReturn = (trackId) => {
-    const { favoriteList } = this.state;
-    const checkArray = [];
-    favoriteList.forEach((song) => {
-      if (song.trackId === trackId) {
-        checkArray.push(song.trackId);
-      }
-    });
-    const check = checkArray.some((song) => Number(song) === Number(trackId));
-    if (check === true) {
-      return check;
-    }
   }
 
   render() {
@@ -48,6 +33,7 @@ class Album extends React.Component {
       musicList,
       album,
       artist,
+      favoritList,
     } = this.state;
     return (
       <div data-testid="page-album">
@@ -58,13 +44,14 @@ class Album extends React.Component {
         <h3 data-testid="album-name">
           { album }
         </h3>
-        { musicList.map((music) => (
+        { musicList.slice(1).map((music) => (
           <MusicCard
             key={ music.trackId }
             trackName={ music.trackName }
             previewUrl={ music.previewUrl }
             trackId={ music.trackId }
-            checked={ this.favoriteListReturn(music.trackId) }
+            music={ music }
+            favoritList={ favoritList }
           />
         ))}
       </div>
